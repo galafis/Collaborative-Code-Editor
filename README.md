@@ -2,6 +2,9 @@
 
 ## English
 
+![Collaborative Code Editor Hero Image](https://placehold.co/1200x600/000000/FFFFFF/Collaborative%20Code%20Editor)
+
+
 ### Overview
 Advanced Collaborative-Code-Editor with comprehensive functionality and modern technology stack. Features multiple programming languages, interactive web interfaces, and advanced analytics capabilities for professional-grade solutions.
 
@@ -142,6 +145,9 @@ ANALYTICS_CONFIG = {
 
 ## Português
 
+![Imagem Hero do Editor de Código Colaborativo](https://placehold.co/1200x600/000000/FFFFFF/Editor%20de%20Codigo%20Colaborativo)
+
+
 ### Visão Geral
 Collaborative-Code-Editor avançado com funcionalidade abrangente e stack de tecnologia moderna. Apresenta múltiplas linguagens de programação, interfaces web interativas e capacidades de análise avançadas para soluções de nível profissional.
 
@@ -215,23 +221,3 @@ Contribuições são bem-vindas! Por favor, abra uma issue ou envie um pull requ
 
 ### Contato
 Para dúvidas ou suporte, entre em contato através do email ou LinkedIn mencionados acima.
-
-
-## 📋 Descrição
-
-Descreva aqui o conteúdo desta seção.
-
-
-## 📦 Instalação
-
-Descreva aqui o conteúdo desta seção.
-
-
-## 💻 Uso
-
-Descreva aqui o conteúdo desta seção.
-
-
-## 📄 Licença
-
-Descreva aqui o conteúdo desta seção.
