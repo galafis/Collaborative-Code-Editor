@@ -5,15 +5,16 @@ Real-time collaborative code editor with syntax highlighting, live collaboration
 and integrated chat functionality using WebSockets.
 """
 
-from flask import Flask, render_template, request
-from flask_socketio import SocketIO, emit, join_room, leave_room
-import json
+import os
 import uuid
 from datetime import datetime
 
+from flask import Flask, jsonify, request
+from flask_socketio import SocketIO, emit, join_room, leave_room
+
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'collaborative_editor_secret_2024'
-socketio = SocketIO(app, cors_allowed_origins="*")
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+socketio = SocketIO(app, cors_allowed_origins=os.environ.get('CORS_ORIGINS', '*'))
 
 # In-memory storage for demo
 documents = {}
@@ -124,17 +125,30 @@ print("Prime numbers up to 50:", calculate_prime_numbers(50))''',
 
 @app.route('/')
 def index():
-    return render_template('editor.html')
+    return jsonify({
+        'name': 'Collaborative Code Editor',
+        'description': 'Real-time collaborative code editor backend using Flask-SocketIO',
+        'endpoints': {
+            'GET /api/documents': 'List all documents',
+            'GET /api/documents/<doc_id>': 'Get a specific document',
+            'GET /api/stats': 'Get server statistics'
+        },
+        'websocket_events': [
+            'join_document', 'leave_document', 'code_change',
+            'cursor_change', 'send_message', 'get_chat_history',
+            'create_document', 'save_document'
+        ]
+    })
 
 @app.route('/api/documents')
 def get_documents():
-    return json.dumps(list(documents.values()))
+    return jsonify(list(documents.values()))
 
 @app.route('/api/documents/<doc_id>')
 def get_document(doc_id):
     if doc_id in documents:
-        return json.dumps(documents[doc_id])
-    return json.dumps({'error': 'Document not found'}), 404
+        return jsonify(documents[doc_id])
+    return jsonify({'error': 'Document not found'}), 404
 
 @socketio.on('connect')
 def on_connect():
@@ -158,7 +172,9 @@ def on_disconnect():
 
 @socketio.on('join_document')
 def on_join_document(data):
-    doc_id = data['document_id']
+    doc_id = data.get('document_id')
+    if not doc_id:
+        return
     username = data.get('username', f'User_{request.sid[:8]}')
     
     join_room(doc_id)
@@ -189,7 +205,9 @@ def on_join_document(data):
 
 @socketio.on('leave_document')
 def on_leave_document(data):
-    doc_id = data['document_id']
+    doc_id = data.get('document_id')
+    if not doc_id:
+        return
     leave_room(doc_id)
     
     # Remove user from active users
@@ -206,8 +224,10 @@ def on_leave_document(data):
 
 @socketio.on('code_change')
 def on_code_change(data):
-    doc_id = data['document_id']
-    content = data['content']
+    doc_id = data.get('document_id')
+    content = data.get('content')
+    if not doc_id or content is None:
+        return
     change_data = data.get('change', {})
     
     # Update document content
@@ -224,8 +244,10 @@ def on_code_change(data):
 
 @socketio.on('cursor_change')
 def on_cursor_change(data):
-    doc_id = data['document_id']
-    cursor_position = data['cursor_position']
+    doc_id = data.get('document_id')
+    cursor_position = data.get('cursor_position')
+    if not doc_id or cursor_position is None:
+        return
     selection = data.get('selection')
     
     # Update user's cursor position
@@ -242,8 +264,10 @@ def on_cursor_change(data):
 
 @socketio.on('send_message')
 def on_send_message(data):
-    doc_id = data['document_id']
-    message = data['message']
+    doc_id = data.get('document_id')
+    message = data.get('message')
+    if not doc_id or not message:
+        return
     username = data.get('username', f'User_{request.sid[:8]}')
     
     # Store message
@@ -269,7 +293,9 @@ def on_send_message(data):
 
 @socketio.on('get_chat_history')
 def on_get_chat_history(data):
-    doc_id = data['document_id']
+    doc_id = data.get('document_id')
+    if not doc_id:
+        return
     messages = chat_messages.get(doc_id, [])
     emit('chat_history', {'messages': messages})
 
@@ -293,7 +319,9 @@ def on_create_document(data):
 
 @socketio.on('save_document')
 def on_save_document(data):
-    doc_id = data['document_id']
+    doc_id = data.get('document_id')
+    if not doc_id:
+        return
     
     if doc_id in documents:
         documents[doc_id]['last_modified'] = datetime.now().isoformat()
