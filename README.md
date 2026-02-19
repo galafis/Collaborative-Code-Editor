@@ -1,5 +1,13 @@
 # Collaborative-Code-Editor
 
+<div align="center">
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
+</div>
+
+
 [Portugues](#portugues) | [English](#english)
 
 ---
